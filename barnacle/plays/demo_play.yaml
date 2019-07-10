@@ -1,0 +1,65 @@
+# Comment text starts with a "#" character and is ignored by the system. 
+# Blank lines have no effect on the play.
+#
+# All referenced event, condition, and cost fields MUST correspond verbatim
+# to the entries located in the respective events.yaml, condition.yaml, and 
+# costs.yaml files.
+#
+# Each play consists of a one "description" field. The description field 
+# should reference the situation that leads to a monetary loss.
+description: malware exfiltrates sensitive files off a laptop 
+
+# Each play consists of one "event" field. An event refers to the thing that 
+# could ultimately result in a monetary loss.
+event: user downloads malware 
+
+# Each play will have a "scenario" block. A scenario block consists of a list 
+# of "single" or "branch" items. Items in a list begin with a "-" character. 
+scenario:
+    # A "single" consists of a single "condition" statement. 
+    - single:
+        condition: malware siphons files
+    
+    # A branch indicates that there could be more that one path that needs to
+    # be considered. It consists of a list of two or more weighted 
+    # sub-scenarios. The sum of all weights must equal 100(%). 
+    - branch:
+        # In this case, we're weighting in accordance with the percentage of
+        # each type of computer in our environment, since the effectiveness of 
+        # each condition will be different, based on the type of system.
+        - weight: 50
+          scenario:
+              - single:
+                  condition: malware affects Windows 
+              - single:
+                  condition: Windows Defender not active
+              - single:
+                  condition: Windows Defender doesn't catch malware
+        - weight: 40
+          scenario:
+              - single: 
+                  condition: malware affects macOS 
+              - single:
+                  condition: macOS antivirus not installed 
+              - single:
+                  condition: macOS antivirus doesn't catch malware
+        - weight: 10
+          scenario:
+              - single:
+                  condition: malware affects Chrome OS
+    - single:
+        condition: siphoned files include sensitive info 
+    - single:
+        condition: network rules don't block data egress
+
+# The "magnitude" refers to how many units would be lost if an event made it
+# through all of our conditions. In the event that the item that can be lost 
+# is straight cash, it would refer to the cash amount.
+magnitude:
+    low: 500 
+    mode: 3500
+    high: 700000 
+
+# The "costs" block contains a list of per-unit costs that need to consider.
+costs:
+    - cost: total record loss 

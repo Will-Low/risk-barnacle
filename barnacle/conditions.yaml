@@ -1,26 +1,45 @@
-# The list of all possible conditions that plays that make up scenarios
+# The list of all possible conditions that plays that make up a play's 
+# scenario block. 
+#
+# Each "condition" refers to the percent chance that a particular control or 
+# condition results in the thing you don't want to happen. For 
+# example, we want the condition to be "malware affects Windows" and not
+# "malware doesn't affect Windows", since that's how the program performs its
+# calculations.
+#
+# NOTE: These numbers are for demonstrative purposes only and NOT accurate!
 
-- condition: malware affects OS
+- condition: malware affects Windows 
   low: 1
   mode: 5
   high: 20
 
-- condition: malware affects other OS
+- condition: malware affects macOS 
   low: 1
   mode: 5
   high: 20
 
-- condition: antivirus not installed on computers
+- condition: malware affects Chrome OS 
+  low: 1
+  mode: 5
+  high: 20
+
+- condition: Windows Defender not active 
   low: 1
   mode: 5
   high: 15
 
-- condition: antivirus not active
-  low: 1 
-  mode: 3
-  high: 10
+- condition: Windows Defender doesn't catch malware 
+  low: 1
+  mode: 5
+  high: 15
 
-- condition: antivirus doesn't catch the malware
+- condition: macOS antivirus not installed
+  low: 1
+  mode: 5
+  high: 15
+
+- condition: macOS antivirus doesn't catch malware
   low: 1
   mode: 3
   high: 5
@@ -30,12 +49,12 @@
   mode: 30
   high: 80
 
-- condition: files include sensitive info 
+- condition: siphoned files include sensitive info 
   low: 10
   mode: 50
   high: 90
 
-- condition: controls don't block egress site
+- condition: network rules don't block data egress
   low: 10
   mode: 50
   high: 90

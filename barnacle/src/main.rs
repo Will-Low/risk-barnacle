@@ -10,9 +10,9 @@ use std::collections::HashMap;
 
 fn main() {
 
-    let matches = App::new("Phagocyte")
+    let matches = App::new("Risk Barnacle")
         .long_about("A Monte Carlo simulation tool for calculating monetary losses based of different risk scenarios")
-        .author("Will Springer")
+        .set_term_width(80)
         .arg(Arg::with_name("output")
              .short("o")
              .long("output")
@@ -29,7 +29,7 @@ fn main() {
              .short("i")
              .long("iterations")
              .value_name("ITERATIONS")
-             .long_help("Specify a custom iteration count for the Monte Carlo simulation. Default is 100,000."))
+             .help("Specify a custom iteration count for the Monte Carlo simulation. Default is 100,000."))
         .get_matches();
     
     // Load config

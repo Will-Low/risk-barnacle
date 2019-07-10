@@ -1,13 +1,7 @@
 # Events 
 
-- event: individual downloads malware
+- event: user downloads malware
   includes_controls: false
   low: 1
   mode: 2
   high: 3
-
-- event: individual receives phishing email
-  includes_controls: false
-  low: 730
-  mode: 1300
-  high: 10000
