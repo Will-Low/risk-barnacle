@@ -1,0 +1,11 @@
+# This file contains costs-per-unit, where unit is defined in the "magnitude" block of a playbook
+
+- cost: total record loss
+  low: 50
+  mode: 150
+  high: 250
+
+- cost: something else 
+  low: 3
+  mode: 5
+  high: 7 

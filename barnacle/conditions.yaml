@@ -1,0 +1,41 @@
+# The list of all possible conditions that plays that make up scenarios
+
+- condition: malware affects OS
+  low: 1
+  mode: 5
+  high: 20
+
+- condition: malware affects other OS
+  low: 1
+  mode: 5
+  high: 20
+
+- condition: antivirus not installed on computers
+  low: 1
+  mode: 5
+  high: 15
+
+- condition: antivirus not active
+  low: 1 
+  mode: 3
+  high: 10
+
+- condition: antivirus doesn't catch the malware
+  low: 1
+  mode: 3
+  high: 5
+
+- condition: malware siphons files
+  low: 10
+  mode: 30
+  high: 80
+
+- condition: files include sensitive info 
+  low: 10
+  mode: 50
+  high: 90
+
+- condition: controls don't block egress site
+  low: 10
+  mode: 50
+  high: 90
