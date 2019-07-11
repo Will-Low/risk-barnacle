@@ -4,8 +4,8 @@
 # Each "condition" refers to the percent chance that a particular control or 
 # condition results in the thing you don't want to happen. For 
 # example, we want the condition to be "malware affects Windows" and not
-# "malware doesn't affect Windows", since that's how the program performs its
-# calculations.
+# "malware doesn't affect Windows", since this is how the program will add
+# up the conditions.
 #
 # NOTE: These numbers are for demonstrative purposes only and NOT accurate!
 
