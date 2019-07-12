@@ -56,6 +56,11 @@ fn main() {
         "PLAY-DESCRIPTION", "ANNU. PROB", "5%", "95%", "MEAN", "MEDIAN", "STD DEV"
     );
 
-    let iterations = 100_000;
-    run_plays(&mut paths, &conditions, &events, &costs);
+    let mut iterations: usize = 100_000;
+    if matches.is_present("iterations") {
+        iterations = matches.value_of("iterations").unwrap().parse().unwrap();
+    }
+    let iterations = iterations;
+
+    run_plays(&iterations, &mut paths, &conditions, &events, &costs);
 }

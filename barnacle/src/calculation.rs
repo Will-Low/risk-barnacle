@@ -1,10 +1,9 @@
 use data_types::*;
 use rand::distributions::{Uniform, Distribution};
 
-pub fn monte_carlo(play: &Play) -> MonteCarloResult {
+pub fn monte_carlo(iterations: &usize, play: &Play) -> MonteCarloResult {
     let mut round_outcomes: Vec<f64> = vec![];
-    let iterations = 100_000;
-    for _round in 1..iterations {
+    for _round in 1..*iterations {
         let event_prob = play.event.prob.unwrap().sample(&mut rand::thread_rng());
         let mut rng = rand::thread_rng();
         let simulation_rand = Uniform::new_inclusive(0.0, 1.0);
@@ -27,7 +26,19 @@ pub fn monte_carlo(play: &Play) -> MonteCarloResult {
     round_outcomes.sort_by(|a, b| a.partial_cmp(b).unwrap());
 
     let outcomes_length = round_outcomes.len();
-    let annual_loss_event_prob = outcomes_length as f64 / iterations as f64 * 100.0; 
+    if outcomes_length == 0 {
+        return MonteCarloResult {
+            description: play.description.clone(),
+            annual_loss_event_prob: 0.0,
+            fifth_percentile: 0.0,
+            ninety_fifth_percentile: 0.0,
+            mean: 0.0,
+            median: 0.0,
+            std_dev: 0.0,
+        };
+    }
+
+    let annual_loss_event_prob = outcomes_length as f64 / *iterations as f64 * 100.0; 
     let fifth_percentile = round_outcomes[(outcomes_length as f64 * 0.05) as usize];
     let ninety_fifth_percentile = round_outcomes[(outcomes_length as f64 * 0.95) as usize];
     let median = round_outcomes[(outcomes_length as f64 / 2.0) as usize];

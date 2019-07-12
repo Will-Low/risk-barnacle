@@ -12,6 +12,7 @@ use std::path::Path;
 use walkdir::{DirEntry, WalkDir};
 
 pub fn run_plays(
+    iterations: &usize,
     paths: &mut Vec<String>,
     conditions: &[data_types::Condition],
     events: &[data_types::Event],
@@ -30,7 +31,7 @@ pub fn run_plays(
         let mut play: data_types::Play = retrieve_yaml::play(&path);
         play.validate();
         play.build_models(&events, &conditions, &costs);
-        let result = calculation::monte_carlo(&play);
+        let result = calculation::monte_carlo(&iterations, &play);
 
         println!(
             "{0: <60} | {1:9.6}% | {2:10.2} | {3:10.2} | {4:10.2} | {5:10.2} | {6:10.2}",
