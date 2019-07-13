@@ -1,4 +1,3 @@
-use rand::distributions::Triangular;
 use serde::Deserialize;
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -434,3 +433,76 @@ impl WeightChecking for Vec<Entry> {
         }
     }
 }
+
+// The Triangular distribution below is:
+//
+// Copyright 2018 Developers of the Rand project.
+//
+// Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
+// https://www.apache.org/licenses/LICENSE-2.0> or the MIT license
+// <LICENSE-MIT or https://opensource.org/licenses/MIT>, at your
+// option. This file may not be copied, modified, or distributed
+// except according to those terms.
+//
+// It has been modified from the original form in rand::distributions::Triangular
+// to allow for a uniform distribution where min == mode == max.
+
+use rand::Rng;
+use rand::distributions::{Distribution, Standard};
+
+#[derive(Clone, Copy, Debug)]
+pub struct Triangular {
+    min: f64,
+    max: f64,
+    mode: f64,
+}
+
+impl Triangular {
+    #[inline]
+    pub fn new(min: f64, max: f64, mode: f64) -> Triangular {
+        assert!(max >= mode);
+        assert!(mode >= min);
+        Triangular { min, max, mode }
+    }
+}
+
+impl Distribution<f64> for Triangular {
+    #[inline]
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> f64 {
+        let f: f64 = rng.sample(Standard);
+        let diff_mode_min = self.mode - self.min;
+        let diff_max_min = self.max - self.min;
+        if f * diff_max_min < diff_mode_min {
+            self.min + (f * diff_max_min * diff_mode_min).sqrt()
+        } else {
+            self.max - ((1. - f) * diff_max_min * (self.max - self.mode)).sqrt()
+        }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use distributions::Distribution;
+    use super::Triangular;
+
+    #[test]
+    fn test_new() {
+        for &(min, max, mode) in &[
+            (-1., 1., 0.), (1., 2., 1.), (5., 25., 25.), (1e-5, 1e5, 1e-3),
+            (0., 1., 0.9), (-4., -0.5, -2.), (-13.039, 8.41, 1.17),
+        ] {
+            println!("{} {} {}", min, max, mode);
+            let _ = Triangular::new(min, max, mode);
+        }
+    }
+
+    #[test]
+    fn test_sample() {
+        let norm = Triangular::new(0., 1., 0.5);
+        let mut rng = ::test::rng(1);
+        for _ in 0..1000 {
+            norm.sample(&mut rng);
+        }
+    }
+}
+
