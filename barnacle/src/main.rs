@@ -50,12 +50,6 @@ fn main() {
     // Build list of paths to plays
     let mut paths = build_play_paths(settings.get("plays").unwrap());
 
-    // Table headers
-    println!(
-        "{0: <60} | {1: <10} | {2: <10} | {3: <10} | {4: <10} | {5: <10} | {6: <10}",
-        "PLAY-DESCRIPTION", "ANNU. PROB", "5%", "95%", "MEAN", "MEDIAN", "STD DEV"
-    );
-
     let mut iterations: usize = 100_000;
     if matches.is_present("iterations") {
         iterations = matches.value_of("iterations").unwrap().parse().unwrap();
