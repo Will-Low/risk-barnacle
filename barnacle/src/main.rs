@@ -1,8 +1,10 @@
 extern crate barnacle;
 extern crate clap;
 extern crate config;
+extern crate chrono;
 
 use clap::{Arg, App};
+use chrono::Utc;
 use barnacle::data_types;
 use barnacle::data_types::Validation;
 use barnacle::{build_play_paths, retrieve_yaml, run_plays};
@@ -55,6 +57,11 @@ fn main() {
         iterations = matches.value_of("iterations").unwrap().parse().unwrap();
     }
     let iterations = iterations;
+    
+    let mut output_file_name = String::from(settings.get("output_dir").expect("No value \"output_dir\" listed in Settings.toml. This is required").clone() + "/" + &Utc::now().to_rfc3339() + "UTC.csv"); 
+    if matches.is_present("output") {
+        output_file_name = matches.value_of("output").unwrap().to_owned()    + ".csv";
+    }
 
-    run_plays(&iterations, &mut paths, &conditions, &events, &costs);
+    run_plays(&output_file_name, &iterations, &mut paths, &conditions, &events, &costs);
 }

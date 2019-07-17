@@ -9,7 +9,6 @@ extern crate serde;
 extern crate serde_yaml;
 extern crate walkdir;
 
-use chrono::Utc;
 use data_types::Validation;
 use prettytable::Table;
 use std::fs::File;
@@ -17,6 +16,7 @@ use std::path::Path;
 use walkdir::{DirEntry, WalkDir};
 
 pub fn run_plays(
+    output_file_name: &String,
     iterations: &usize,
     paths: &mut Vec<String>,
     conditions: &[data_types::Condition],
@@ -33,7 +33,6 @@ pub fn run_plays(
         std_dev: 0.0,
     };
     let mut table = Table::new();
-    let out_file = File::create(String::from("output/") + &Utc::now().to_rfc3339() + "UTC.csv").unwrap();
     table.add_row(row!["PLAY-DESCRIPTION", 
                        "ANN. PROB",
                        "5%",
@@ -71,6 +70,8 @@ pub fn run_plays(
                        format!("{:.2}", &total.median),
                        format!("{:.2}", &total.std_dev)]);
     table.printstd();
+
+    let out_file = File::create(output_file_name).unwrap();
     table.to_csv(out_file).unwrap();
 }
 
