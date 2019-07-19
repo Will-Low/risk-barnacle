@@ -1,5 +1,3 @@
-# Organization
-
 ## Files
 **Settings.toml** - Main configuration file that specifies the location of other files.
 
