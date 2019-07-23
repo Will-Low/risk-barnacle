@@ -173,6 +173,7 @@ pub enum Entry {
     Branch(Vec<Leaf>),
 }
 
+#[derive(Debug, Clone)]
 pub struct MonteCarloResult {
     pub description: String,
     pub annual_loss_event_prob: f64,

@@ -9,6 +9,7 @@ extern crate serde;
 extern crate serde_yaml;
 extern crate walkdir;
 
+use data_types::MonteCarloResult;
 use data_types::Validation;
 use prettytable::Table;
 use std::fs::File;
@@ -24,7 +25,7 @@ pub fn run_plays(
     costs: &[data_types::Cost],
 ) {
     let mut total = data_types::MonteCarloResult {
-        description: String::from("TOTAL"),
+        description: String::from("PER ANNUM"),
         annual_loss_event_prob: 0.0,
         fifth_percentile: 0.0,
         ninety_fifth_percentile: 0.0,
@@ -34,34 +35,67 @@ pub fn run_plays(
     };
     let mut table = Table::new();
     table.add_row(row!["PLAY-DESCRIPTION", 
-                       "ANN. PROB",
-                       "5%",
-                       "95%",
+                       "ANN. LOSS PROB",
+                       "LOW",
+                       "HIGH",
                        "MEAN",
                        "MEDIAN",
                        "STD DEV"]);
+    
+    let mut results: Vec<MonteCarloResult> = vec![];
+    let mut results_scenarios_preserved: Vec<Vec<f64>> = vec![];
 
     for path in paths {
         let mut play: data_types::Play = retrieve_yaml::play(&path);
         play.validate();
         play.build_models(&events, &conditions, &costs);
         let result = calculation::monte_carlo(&iterations, &play);
-        
-        table.add_row(row![&result.description,
-                           format!("{}{}", &result.annual_loss_event_prob, "%"),
-                           format!("{:.2}", &result.fifth_percentile),
-                           format!("{:.2}", &result.ninety_fifth_percentile),
-                           format!("{:.2}", &result.mean),
-                           format!("{:.2}", &result.median),
-                           format!("{:.2}", &result.std_dev)]);
-
-        total.fifth_percentile += result.fifth_percentile;
-        total.ninety_fifth_percentile += result.ninety_fifth_percentile;
-        total.mean += result.mean;
-        total.median += result.median;
-        total.std_dev += result.std_dev;
+        results.push(result.0);
+        results_scenarios_preserved.push(result.1);
     }
-     
+
+    if results.len() < 1 {
+        panic!("Appears there are no plays in scope.");
+    } else if results.len() == 1 {
+        total.annual_loss_event_prob = results[0].annual_loss_event_prob;
+        total.fifth_percentile = results[0].fifth_percentile;
+        total.ninety_fifth_percentile = results[0].ninety_fifth_percentile;
+        total.mean = results[0].mean;
+        total.median = results[0].median;
+        total.std_dev = results[0].std_dev;
+    } else { 
+        for result in &results {
+            table.add_row(row![&result.description,
+                               format!("{}{}", &result.annual_loss_event_prob, "%"),
+                               format!("{:.2}", &result.fifth_percentile),
+                               format!("{:.2}", &result.ninety_fifth_percentile),
+                               format!("{:.2}", &result.mean),
+                               format!("{:.2}", &result.median),
+                               format!("{:.2}", &result.std_dev)]);
+        }
+        
+        // Calculating the "per annum" fields
+        let mut scenario_totals: Vec<f64> = vec![];
+        for scenario_index in 0..*iterations - 1 {
+            let mut scenario_total = 0.0;
+            for play in &results_scenarios_preserved {
+                scenario_total += play[scenario_index];
+            } 
+            if scenario_total > 0.0 {
+                scenario_totals.push(scenario_total)
+            }
+        }
+        scenario_totals.sort_by(|a, b| a.partial_cmp(b).unwrap());
+        let scenario_totals_length = scenario_totals.len();
+
+        total.annual_loss_event_prob = scenario_totals_length as f64 / *iterations as f64 * 100.0;
+        total.fifth_percentile = scenario_totals[0];
+        total.ninety_fifth_percentile = scenario_totals[scenario_totals_length - 1];
+        total.median = calculation::median(&scenario_totals).unwrap();
+        total.mean = calculation::mean(&scenario_totals).unwrap();
+        total.std_dev = calculation::std_deviation(&scenario_totals).unwrap();
+    }
+
     table.add_row(row![&total.description,
                        format!("{}{}", &total.annual_loss_event_prob, "%"),
                        format!("{:.2}", &total.fifth_percentile),
