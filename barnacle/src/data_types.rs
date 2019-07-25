@@ -59,7 +59,7 @@ pub struct Cost {
 
 #[derive(Debug, Deserialize)]
 pub struct Leaf {
-    pub weight: f64,
+    pub weight: u32,
     pub scenario: Vec<Entry>,
 }
 
@@ -117,13 +117,12 @@ impl Play {
 
         // Match cost values in play and move their values to the play
         for cost in &mut self.costs {
-            hashed_costs.get(&cost.description).expect(
-                format!(
+            hashed_costs.get(&cost.description).unwrap_or_else(|| {
+                panic!(
                     "[ERROR] cost in play \"{}\" not found in \"costs.yaml\".",
                     &cost.description
                 )
-                .as_str(),
-            );
+            });
             cost.range.low = hashed_costs.get(&cost.description).unwrap().low;
             cost.range.mode = hashed_costs.get(&cost.description).unwrap().mode;
             cost.range.high = hashed_costs.get(&cost.description).unwrap().high;
@@ -140,13 +139,14 @@ fn populate_conditions(entries: &mut Vec<Entry>, hashed_conditions: &HashMap<&St
     for entry in entries {
         match entry {
             Entry::Single(condition) => {
-                hashed_conditions.get(&condition.description).expect(
-                    format!(
-                        "[ERROR] condition in play \"{}\" not found in \"conditions.yaml\".",
-                        &condition.description
-                    )
-                    .as_str(),
-                );
+                hashed_conditions
+                    .get(&condition.description)
+                    .unwrap_or_else(|| {
+                        panic!(
+                            "[ERROR] condition in play \"{}\" not found in \"conditions.yaml\".",
+                            &condition.description
+                        )
+                    });
                 condition.range.low = hashed_conditions.get(&condition.description).unwrap().low;
                 condition.range.mode = hashed_conditions.get(&condition.description).unwrap().mode;
                 condition.range.high = hashed_conditions.get(&condition.description).unwrap().high;
@@ -421,13 +421,13 @@ impl WeightChecking for Vec<Entry> {
     fn check_weight_totals(&self) {
         for each in self {
             if let Entry::Branch(leaves) = each {
-                let mut weight_total = 0.0;
+                let mut weight_total = 0;
                 for leaf in leaves {
                     weight_total += leaf.weight;
                     leaf.scenario.check_weight_totals();
                 }
                 assert!(
-                    weight_total == 100.0,
+                    weight_total == 100,
                     "Weight totals for a branch don't equal 100."
                 );
             }
@@ -467,8 +467,8 @@ impl WeightChecking for Vec<Entry> {
 // It has been modified from the original in rand::distributions::Triangular
 // to allow for a uniform distribution where min == mode == max.
 
-use rand::Rng;
 use rand::distributions::{Distribution, Standard};
+use rand::Rng;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Triangular {
@@ -502,14 +502,19 @@ impl Distribution<f64> for Triangular {
 
 #[cfg(test)]
 mod test {
-    use distributions::Distribution;
     use super::Triangular;
+    use distributions::Distribution;
 
     #[test]
     fn test_new() {
         for &(min, max, mode) in &[
-            (-1., 1., 0.), (1., 2., 1.), (5., 25., 25.), (1e-5, 1e5, 1e-3),
-            (0., 1., 0.9), (-4., -0.5, -2.), (-13.039, 8.41, 1.17),
+            (-1., 1., 0.),
+            (1., 2., 1.),
+            (5., 25., 25.),
+            (1e-5, 1e5, 1e-3),
+            (0., 1., 0.9),
+            (-4., -0.5, -2.),
+            (-13.039, 8.41, 1.17),
         ] {
             println!("{} {} {}", min, max, mode);
             let _ = Triangular::new(min, max, mode);
@@ -525,4 +530,3 @@ mod test {
         }
     }
 }
-

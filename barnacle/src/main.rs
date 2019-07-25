@@ -1,17 +1,16 @@
 extern crate barnacle;
+extern crate chrono;
 extern crate clap;
 extern crate config;
-extern crate chrono;
 
-use clap::{Arg, App};
-use chrono::Utc;
 use barnacle::data_types;
 use barnacle::data_types::Validation;
 use barnacle::{build_play_paths, retrieve_yaml, run_plays};
+use chrono::Utc;
+use clap::{App, Arg};
 use std::collections::HashMap;
 
 fn main() {
-
     let matches = App::new("Risk Barnacle")
         .name("RISK BARNACLE")
         .long_about("A Monte Carlo simulation tool for calculating monetary losses based of different risk scenarios")
@@ -28,7 +27,7 @@ fn main() {
              .value_name("ITERATIONS")
              .help("Specify a custom iteration count for the Monte Carlo simulation. Default is 100,000."))
         .get_matches();
-    
+
     // Load config
     let mut settings = config::Config::default();
     settings.merge(config::File::with_name("Settings")).unwrap();
@@ -47,16 +46,30 @@ fn main() {
     // Build list of paths to plays
     let mut paths = build_play_paths(settings.get("plays").unwrap());
 
-    let mut iterations: usize = 100_000;
-    if matches.is_present("iterations") {
-        iterations = matches.value_of("iterations").unwrap().parse().unwrap();
-    }
-    let iterations = iterations;
-    
-    let mut output_file_name = String::from(settings.get("output_dir").expect("No value \"output_dir\" listed in Settings.toml. This is required").clone() + "/" + &Utc::now().to_rfc3339() + "UTC.csv"); 
-    if matches.is_present("output") {
-        output_file_name = matches.value_of("output").unwrap().to_owned()    + ".csv";
-    }
+    let iterations: usize = if matches.is_present("iterations") {
+        matches.value_of("iterations").unwrap().parse().unwrap()
+    } else {
+        100_000
+    };
 
-    run_plays(&output_file_name, &iterations, &mut paths, &conditions, &events, &costs);
+    let output_file_name = if matches.is_present("output") {
+        matches.value_of("output").unwrap().to_owned() + ".csv"
+    } else {
+        settings
+            .get("output_dir")
+            .expect("No value \"output_dir\" listed in Settings.toml. This is required")
+            .clone()
+            + "/"
+            + &Utc::now().to_rfc3339()
+            + "UTC.csv"
+    };
+
+    run_plays(
+        &output_file_name,
+        iterations,
+        &mut paths,
+        &conditions,
+        &events,
+        &costs,
+    );
 }
