@@ -1,0 +1,12 @@
+/home/will/repos/risk-barnacle/barnacle/target/release/deps/libencode_unicode-f18a7b8d9595b1d2.rlib: /home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/lib.rs /home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/errors.rs /home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/traits.rs /home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/utf8_char.rs /home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/utf8_iterators.rs /home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/utf16_char.rs /home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/utf16_iterators.rs /home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/decoding_iterators.rs
+
+/home/will/repos/risk-barnacle/barnacle/target/release/deps/encode_unicode-f18a7b8d9595b1d2.d: /home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/lib.rs /home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/errors.rs /home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/traits.rs /home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/utf8_char.rs /home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/utf8_iterators.rs /home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/utf16_char.rs /home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/utf16_iterators.rs /home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/decoding_iterators.rs
+
+/home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/lib.rs:
+/home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/errors.rs:
+/home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/traits.rs:
+/home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/utf8_char.rs:
+/home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/utf8_iterators.rs:
+/home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/utf16_char.rs:
+/home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/utf16_iterators.rs:
+/home/will/.cargo/registry/src/github.com-1ecc6299db9ec823/encode_unicode-0.3.5/src/decoding_iterators.rs:

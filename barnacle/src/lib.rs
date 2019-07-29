@@ -66,6 +66,16 @@ pub fn run_plays(
         total.mean = results[0].mean;
         total.median = results[0].median;
         total.std_dev = results[0].std_dev;
+        
+        table.add_row(row![
+            &results[0].description,
+            format!("{}{}", &results[0].annual_loss_event_prob, "%"),
+            format!("{:.2}", &results[0].fifth_percentile),
+            format!("{:.2}", &results[0].ninety_fifth_percentile),
+            format!("{:.2}", &results[0].mean),
+            format!("{:.2}", &results[0].median),
+            format!("{:.2}", &results[0].std_dev)
+        ]);
     } else {
         for result in &results {
             table.add_row(row![
