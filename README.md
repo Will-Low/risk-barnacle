@@ -23,3 +23,9 @@ Risk Barnacle's risk engine takes the supplied value ranges, supplied in the eve
 Write a new play file (see the demo file at `plays/demo_play.yaml` for an example) and add the referenced events, conditions, and costs to their respective files.
 
 Run Risk Barnacle with `barnacle` command (release binary located at `target/release/barnacle`), which will run 100,000 iterations by default. This may be changed with the `-i` or `--iterations` flags. It'll print results and save them as a CSV file in the `output` directory. By default, it titles each run with the current UTC time, though this may be overridden with the `-o` or `--output` flags.
+
+## How to Build It
+1. Install the Rust development environment (Rustup), using the instructions here: https://www.rust-lang.org/tools/install
+2. Navigate to the `barnacle` folder
+3. Build Risk Barnacle using `cargo build` for a slower, debug version or `cargo build --release` for the faster, optimized version (recommended).
+4. Run Risk Barnacle by navigating to the `barnacle` directory and running `./target/release/barnacle`.
