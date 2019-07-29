@@ -22,4 +22,4 @@ Risk Barnacle's risk engine takes the supplied value ranges, supplied in the eve
 ## How to Use It
 Write a new play file (see the demo file at `plays/demo_play.yaml` for an example) and add the referenced events, conditions, and costs to their respective files.
 
-Run Risk Barnacle with `barnacle` command, which will run 100,000 iterations by default. This may be changed with the `-i` or `--iterations` flags. It'll print results and save them as a CSV file in the `output` directory. By default, it titles each run with the current UTC time, though this may be overridden with the `-o` or `--output` flags.
+Run Risk Barnacle with `barnacle` command (release binary located at `target/release/barnacle`), which will run 100,000 iterations by default. This may be changed with the `-i` or `--iterations` flags. It'll print results and save them as a CSV file in the `output` directory. By default, it titles each run with the current UTC time, though this may be overridden with the `-o` or `--output` flags.
