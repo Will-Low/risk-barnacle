@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/26700668/62333366-355c2680-b491-11e9-85cb-02259f776eac.png" width="40%" align="">
+</p>
+
 # Risk Barnacle
 
 Risk Barnacle is a tool to help quantitatively assess risk. It converts different risk scenarios into a probability distribution of monetary losses at different amounts.
