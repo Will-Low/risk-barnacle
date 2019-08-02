@@ -1,6 +1,7 @@
 use serde::Deserialize;
 use std::collections::HashMap;
 use std::collections::HashSet;
+use std::process;
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct Range {
@@ -187,26 +188,28 @@ pub struct MonteCarloResult {
 impl Range {
     pub fn range_checks(&self, data_type: &str, description: &str) {
         match (self.low, self.high) {
-            (None, None) => panic!(
-                "{} \"{}\" missing both low and high values. \
-                 These are mandatory.",
-                data_type, description
-            ),
-            (None, Some(_)) => panic!(
-                "{} \"{}\" missing low value. This is mandatory.",
-                data_type, description
-            ),
-            (Some(_), None) => panic!(
-                "{} \"{}\" missing high value. This is mandatory.",
-                data_type, description
-            ),
+            (None, None) => {
+                eprintln!("{} - \"{}\" missing both low and high values. \
+                    These fields are mandatory.", data_type, description);
+                process::exit(1);
+            },
+            (None, Some(_)) => {
+                eprintln!("{} - \"{}\" missing low value. This field is mandatory.",
+                    data_type, description);
+                process::exit(1);
+            },
+            (Some(_), None) => {
+                eprintln!("{} - \"{}\" missing high value. This field is mandatory.",
+                    data_type, description);
+                process::exit(1);
+            },
             (Some(_), Some(_)) => (),
         }
 
         assert!(
             self.low > Some(0.0),
             format!(
-                "{} \"{}\" low value is '{}'. This field must be zero or greater.",
+                "{} - \"{}\" low value is '{}'. This field must be zero or greater.",
                 data_type,
                 description,
                 self.low.unwrap()
@@ -215,7 +218,7 @@ impl Range {
         assert!(
             self.high > Some(0.0),
             format!(
-                "{} \"{}\" high value is '{}'. This field must be zero or greater.",
+                "{} - \"{}\" high value is '{}'. This field must be zero or greater.",
                 data_type,
                 description,
                 self.high.unwrap()
@@ -225,7 +228,7 @@ impl Range {
         // Check Low <= High
         if self.low.unwrap() > self.high.unwrap() {
             panic!(
-                "{} \"{}\" low value '{}' is larger than high value '{}'",
+                "{} - \"{}\" low value '{}' is larger than high value '{}'",
                 data_type,
                 description,
                 self.low.unwrap(),
@@ -238,7 +241,7 @@ impl Range {
             assert!(
                 self.mode > Some(0.0),
                 format!(
-                    "{} \"{}\" mode value is '{}'. This field must be zero or greater.",
+                    "{} - \"{}\" mode value is '{}'. This field must be zero or greater.",
                     data_type,
                     description,
                     self.mode.unwrap()
@@ -246,7 +249,7 @@ impl Range {
             );
             if self.low.unwrap() > self.mode.unwrap() {
                 panic!(
-                    "{} \"{}\" low value '{}' is larger than mode value '{}'",
+                    "{} - \"{}\" low value '{}' is larger than mode value '{}'",
                     data_type,
                     description,
                     self.low.unwrap(),
@@ -255,7 +258,7 @@ impl Range {
             }
             if self.mode.unwrap() > self.high.unwrap() {
                 panic!(
-                    "{} \"{}\" mode value '{}' is larger than high value '{}'",
+                    "{} - \"{}\" mode value '{}' is larger than high value '{}'",
                     data_type,
                     description,
                     self.mode.unwrap(),
@@ -292,16 +295,16 @@ impl IntRange {
     pub fn range_checks(&self, data_type: &str, description: &str) {
         match (self.low, self.high) {
             (None, None) => panic!(
-                "{} \"{}\" missing both low and high values. \
+                "{} - \"{}\" missing both low and high values. \
                  These are mandatory.",
                 data_type, description
             ),
             (None, Some(_)) => panic!(
-                "{} \"{}\" missing low value. This is mandatory.",
+                "{} - \"{}\" missing low value. This is mandatory.",
                 data_type, description
             ),
             (Some(_), None) => panic!(
-                "{} \"{}\" missing high value. This is mandatory.",
+                "{} - \"{}\" missing high value. This is mandatory.",
                 data_type, description
             ),
             (Some(_), Some(_)) => (),
@@ -310,7 +313,7 @@ impl IntRange {
         assert!(
             self.low > Some(0),
             format!(
-                "{} \"{}\" low value is '{}'. This field must be zero or greater.",
+                "{} - \"{}\" low value is '{}'. This field must be zero or greater.",
                 data_type,
                 description,
                 self.low.unwrap()
@@ -319,7 +322,7 @@ impl IntRange {
         assert!(
             self.high > Some(0),
             format!(
-                "{} \"{}\" high value is '{}'. This field must be zero or greater.",
+                "{} - \"{}\" high value is '{}'. This field must be zero or greater.",
                 data_type,
                 description,
                 self.high.unwrap()
@@ -329,7 +332,7 @@ impl IntRange {
         // Check Low <= High
         if self.low.unwrap() > self.high.unwrap() {
             panic!(
-                "{} \"{}\" low value '{}' is larger than high value '{}'",
+                "{} - \"{}\" low value '{}' is larger than high value '{}'",
                 data_type,
                 description,
                 self.low.unwrap(),
@@ -342,7 +345,7 @@ impl IntRange {
             assert!(
                 self.mode > Some(0),
                 format!(
-                    "{} \"{}\" mode value is '{}'. This field must be zero or greater.",
+                    "{} - \"{}\" mode value is '{}'. This field must be zero or greater.",
                     data_type,
                     description,
                     self.mode.unwrap()
@@ -350,7 +353,7 @@ impl IntRange {
             );
             if self.low.unwrap() > self.mode.unwrap() {
                 panic!(
-                    "{} \"{}\" low value '{}' is larger than mode value '{}'",
+                    "{} - \"{}\" low value '{}' is larger than mode value '{}'",
                     data_type,
                     description,
                     self.low.unwrap(),
@@ -359,7 +362,7 @@ impl IntRange {
             }
             if self.mode.unwrap() > self.high.unwrap() {
                 panic!(
-                    "{} \"{}\" mode value '{}' is larger than high value '{}'",
+                    "{} - \"{}\" mode value '{}' is larger than high value '{}'",
                     data_type,
                     description,
                     self.mode.unwrap(),
@@ -435,7 +438,7 @@ impl WeightChecking for Vec<Entry> {
     }
 }
 
-// The Triangular distribution below is:
+// The Triangular distribution below is licensed under the MIT license below:
 //
 // Copyright 2018 Developers of the Rand project
 // Copyright (c) 2014 The Rust Project Developers
@@ -463,7 +466,7 @@ impl WeightChecking for Vec<Entry> {
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
 // IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
-//
+// ****
 // It has been modified from the original in rand::distributions::Triangular
 // to allow for a uniform distribution where min == mode == max.
 
