@@ -1,1 +1,0 @@
-{"rustc":3433446036604226809,"features":"[\"alloc\", \"default\", \"memchr\", \"std\"]","target":10088282520713642473,"profile":2574335274271406459,"path":7154249379761740118,"deps":[["version_check v0.1.5","version_check",683663250809425511]],"local":[{"Precalculated":"4.2.3"}],"rustflags":[],"edition":"Edition2015"}
