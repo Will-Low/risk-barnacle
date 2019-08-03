@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/Will-Low/risk-barnacle/blob/master/images/barnaclebill.png" width="40%" align="">
+  <img src="https://github.com/Will-Low/risk-barnacle/blob/master/images/barnaclebill.png" width="40%">
 </p>
 Risk Barnacle is a tool to help quantitatively assess risk. It converts different risk scenarios into a probability distribution of monetary losses at different amounts.
 
@@ -26,7 +26,7 @@ Write a new play file (see the demo file at `plays/demo_play.yaml` for an exampl
 Run Risk Barnacle with `barnacle` command (release binary located at `target/release/barnacle`), which will run 100,000 iterations by default. This may be changed with the `-i` or `--iterations` flags. It'll print results and save them as a CSV file in the `output` directory. By default, it titles each run with the current UTC time, though this may be overridden with the `-o` or `--output` flags.
 
 <p align="center">
-  <img src="https://github.com/Will-Low/risk-barnacle/blob/master/images/examplescreenshot.png" width="40%" align="">
+  <img src="https://github.com/Will-Low/risk-barnacle/blob/master/images/examplescreenshot.png">
 </p>
 _Example output from running Risk Barnacle with the "demo_play.yaml"_
 
