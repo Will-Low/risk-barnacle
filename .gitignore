@@ -1,4 +1,4 @@
 # Compiled Program #
-barnacle/target/debug/
+barnacle/target/
 barnacle/output/
 !barnacle/output/README.md
