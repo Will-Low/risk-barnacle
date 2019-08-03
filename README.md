@@ -29,7 +29,7 @@ Run Risk Barnacle with `barnacle` command (release binary located at `target/rel
   <img src="https://github.com/Will-Low/risk-barnacle/blob/master/images/examplescreenshot.png">
 </p>
 
-*Example output from running Risk Barnacle with the "demo_play.yaml"*
+*Example output from running Risk Barnacle with "demo_play.yaml"*
 
 
 ## How to Build It
