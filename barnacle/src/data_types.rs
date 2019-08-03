@@ -5,7 +5,7 @@ use std::process;
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct Range {
-    // Used to create a triangle probuency distribution.
+    // Used to create a triangle prob distribution.
     // Low and High fields are mandatory, but error checking is delegated
     // to the range_checks method. Declaring all three fields here as
     // optional so we can use this struct prior to populating
@@ -17,14 +17,14 @@ pub struct Range {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct IntRange {
-    // Used to create a triangle probuency distribution.
+    // Used to create a triangle prob distribution.
     // Low and High fields are mandatory, but error checking is delegated
     // to the range_checks method. Declaring all three fields here as
     // optional so we can use this struct prior to populating
     // these fields.
-    pub low: Option<i64>,
-    pub mode: Option<i64>,
-    pub high: Option<i64>,
+    pub low: Option<usize>,
+    pub mode: Option<usize>,
+    pub high: Option<usize>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -98,6 +98,14 @@ impl Play {
         }
 
         // Match event values in play and move their values to the play
+        hashed_events.get(&self.event.description).unwrap_or_else(||{
+            eprintln!("[ERROR] Event \"{}\" described in play \"{}\" couldn't \
+                      be found in \"events.yaml\". Check the play file and \
+                      events.yaml for typos or omissions.",
+                      &self.event.description,
+                      &self.description);
+            process::exit(1);
+        });
         self.event.range.low = hashed_events.get(&self.event.description).unwrap().low;
         self.event.range.mode = hashed_events.get(&self.event.description).unwrap().mode;
         self.event.range.high = hashed_events.get(&self.event.description).unwrap().high;
@@ -107,7 +115,7 @@ impl Play {
             self.event.range.mode.unwrap() as f64,
         ));
 
-        populate_conditions(&mut self.scenario, &hashed_conditions);
+        populate_conditions(&self.description, &mut self.scenario, &hashed_conditions);
 
         // Make distribution for magnitude
         self.magnitude_prob = Some(Triangular::new(
@@ -118,11 +126,14 @@ impl Play {
 
         // Match cost values in play and move their values to the play
         for cost in &mut self.costs {
+            let play_description = &self.description.clone();
             hashed_costs.get(&cost.description).unwrap_or_else(|| {
-                panic!(
-                    "[ERROR] cost in play \"{}\" not found in \"costs.yaml\".",
-                    &cost.description
-                )
+                eprintln!("[ERROR] Cost \"{}\" described in play \"{}\" couldn't \
+                          be found in \"costs.yaml\". Check the play file and \
+                          costs.yaml for typos or omissions.",
+                          &cost.description,
+                          &play_description);
+                process::exit(1);
             });
             cost.range.low = hashed_costs.get(&cost.description).unwrap().low;
             cost.range.mode = hashed_costs.get(&cost.description).unwrap().mode;
@@ -136,17 +147,20 @@ impl Play {
     }
 }
 
-fn populate_conditions(entries: &mut Vec<Entry>, hashed_conditions: &HashMap<&String, &Range>) {
+fn populate_conditions(description: &str,entries: &mut Vec<Entry>, hashed_conditions: &HashMap<&String, &Range>) {
     for entry in entries {
         match entry {
             Entry::Single(condition) => {
                 hashed_conditions
                     .get(&condition.description)
                     .unwrap_or_else(|| {
-                        panic!(
-                            "[ERROR] condition in play \"{}\" not found in \"conditions.yaml\".",
-                            &condition.description
-                        )
+                        eprintln!("[ERROR] Condition \"{}\" described in play \
+                                  \"{}\" couldn't be found in \"conditions.yaml\". \
+                                  Check the play file and conditions.yaml for \
+                                  typos or omissions.",
+                                  &condition.description,
+                                  &description);
+                        process::exit(1);
                     });
                 condition.range.low = hashed_conditions.get(&condition.description).unwrap().low;
                 condition.range.mode = hashed_conditions.get(&condition.description).unwrap().mode;
@@ -159,7 +173,7 @@ fn populate_conditions(entries: &mut Vec<Entry>, hashed_conditions: &HashMap<&St
             }
             Entry::Branch(leaves) => {
                 for leaf in leaves {
-                    populate_conditions(&mut leaf.scenario, &hashed_conditions);
+                    populate_conditions(&description, &mut leaf.scenario, &hashed_conditions);
                 }
             }
         }
@@ -227,13 +241,14 @@ impl Range {
 
         // Check Low <= High
         if self.low.unwrap() > self.high.unwrap() {
-            panic!(
+            eprintln!(
                 "{} - \"{}\" low value '{}' is larger than high value '{}'",
                 data_type,
                 description,
                 self.low.unwrap(),
                 self.high.unwrap()
             );
+            process::exit(1);
         }
 
         // If Mode exists, check Low <= Mode; check Mode <= High.
@@ -248,22 +263,24 @@ impl Range {
                 )
             );
             if self.low.unwrap() > self.mode.unwrap() {
-                panic!(
+                eprintln!(
                     "{} - \"{}\" low value '{}' is larger than mode value '{}'",
                     data_type,
                     description,
                     self.low.unwrap(),
                     self.mode.unwrap()
                 );
+                process::exit(1);
             }
             if self.mode.unwrap() > self.high.unwrap() {
-                panic!(
+                eprintln!(
                     "{} - \"{}\" mode value '{}' is larger than high value '{}'",
                     data_type,
                     description,
                     self.mode.unwrap(),
                     self.high.unwrap()
                 );
+                process::exit(1);
             }
         }
     }
@@ -283,7 +300,8 @@ impl Validation for Vec<Condition> {
                 .range_checks("conditions.yaml", &condition.description);
             // Check for duplicates
             if descriptions.contains(&condition.description) {
-                panic!("Found multiple entries of \"{}\" in \"conditions.yaml\". Exactly one entry is required.", condition.description);
+                eprintln!("Found multiple entries of \"{}\" in \"conditions.yaml\". Exactly one entry is required.", condition.description);
+                process::exit(1);
             } else {
                 descriptions.insert(condition.description.clone());
             }
@@ -294,19 +312,21 @@ impl Validation for Vec<Condition> {
 impl IntRange {
     pub fn range_checks(&self, data_type: &str, description: &str) {
         match (self.low, self.high) {
-            (None, None) => panic!(
-                "{} - \"{}\" missing both low and high values. \
-                 These are mandatory.",
-                data_type, description
-            ),
-            (None, Some(_)) => panic!(
-                "{} - \"{}\" missing low value. This is mandatory.",
-                data_type, description
-            ),
-            (Some(_), None) => panic!(
-                "{} - \"{}\" missing high value. This is mandatory.",
-                data_type, description
-            ),
+            (None, None) => {
+                eprintln!("{} - \"{}\" missing both low and high values. \
+                          These are mandatory.", data_type, description);
+                process::exit(1);
+            },
+            (None, Some(_)) => {
+                eprintln!("{} - \"{}\" missing low value. This is mandatory.",
+                          data_type, description);
+                process::exit(1);
+            },
+            (Some(_), None) => {
+                eprintln!("{} - \"{}\" missing high value. This is mandatory.",
+                          data_type, description);
+                process::exit(1);
+            },
             (Some(_), Some(_)) => (),
         }
 
@@ -331,13 +351,9 @@ impl IntRange {
 
         // Check Low <= High
         if self.low.unwrap() > self.high.unwrap() {
-            panic!(
-                "{} - \"{}\" low value '{}' is larger than high value '{}'",
-                data_type,
-                description,
-                self.low.unwrap(),
-                self.high.unwrap()
-            );
+            eprintln!("{} - \"{}\" low value '{}' is larger than high value '{}'",
+                      data_type, description, self.low.unwrap(), self.high.unwrap());
+            process::exit(1);
         }
 
         // If Mode exists, check Low <= Mode; check Mode <= High.
@@ -352,16 +368,13 @@ impl IntRange {
                 )
             );
             if self.low.unwrap() > self.mode.unwrap() {
-                panic!(
-                    "{} - \"{}\" low value '{}' is larger than mode value '{}'",
-                    data_type,
-                    description,
-                    self.low.unwrap(),
-                    self.mode.unwrap()
-                );
+                eprintln!("{} - \"{}\" low value '{}' is larger than mode \
+                          value '{}'", data_type, description, self.low.unwrap(),
+                          self.mode.unwrap());
+                process::exit(1);
             }
             if self.mode.unwrap() > self.high.unwrap() {
-                panic!(
+                eprintln!(
                     "{} - \"{}\" mode value '{}' is larger than high value '{}'",
                     data_type,
                     description,
@@ -383,7 +396,9 @@ impl Validation for Vec<Event> {
                 .range_checks("events.yaml", &event.description);
             // Check for duplicates
             if descriptions.contains(&event.description) {
-                panic!("Found multiple entries of \"{}\" in \"events.yaml\". Exactly one entry is required.", event.description);
+                eprintln!("Found multiple entries of \"{}\" in \"events.yaml\". \
+                          Exactly one entry is required.", event.description);
+                process::exit(1);
             } else {
                 descriptions.insert(event.description.clone());
             }
@@ -398,7 +413,9 @@ impl Validation for Vec<Cost> {
             cost.range.range_checks("costs.yaml", &cost.description);
             // Check for duplicates
             if descriptions.contains(&cost.description) {
-                panic!("Found multiple entries of \"{}\" in \"costs.yaml\". Exactly one entry is required.", cost.description);
+                eprintln!("Found multiple entries of \"{}\" in \"costs.yaml\". \
+                          Exactly one entry is required.", cost.description);
+                process::exit(1);
             } else {
                 descriptions.insert(cost.description.clone());
             }

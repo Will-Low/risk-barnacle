@@ -15,6 +15,7 @@ use data_types::Validation;
 use prettytable::Table;
 use std::fs::File;
 use std::path::Path;
+use std::process;
 use walkdir::{DirEntry, WalkDir};
 
 pub fn run_plays(
@@ -58,7 +59,8 @@ pub fn run_plays(
     }
 
     if results.is_empty() {
-        panic!("Appears there are no plays in scope.");
+        eprintln!("Appears there are no plays in scope.");
+        process::exit(1);
     } else if results.len() == 1 {
         total.annual_loss_event_prob = results[0].annual_loss_event_prob;
         total.fifth_percentile = results[0].fifth_percentile;
