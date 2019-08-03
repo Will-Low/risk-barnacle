@@ -25,6 +25,12 @@ Write a new play file (see the demo file at `plays/demo_play.yaml` for an exampl
 
 Run Risk Barnacle with `barnacle` command (release binary located at `target/release/barnacle`), which will run 100,000 iterations by default. This may be changed with the `-i` or `--iterations` flags. It'll print results and save them as a CSV file in the `output` directory. By default, it titles each run with the current UTC time, though this may be overridden with the `-o` or `--output` flags.
 
+<p align="center">
+  <img src="https://github.com/Will-Low/risk-barnacle/blob/master/images/examplescreenshot.png" width="40%" align="">
+</p>
+_Example output from running Risk Barnacle with the "demo_play.yaml"_
+
+
 ## How to Build It
 1. Install the Rust development environment (Rustup), using the instructions here: https://www.rust-lang.org/tools/install
 2. Navigate to the `barnacle` folder
