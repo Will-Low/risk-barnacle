@@ -4,17 +4,18 @@ use rand::distributions::{Distribution, Uniform};
 pub fn monte_carlo(iterations: usize, play: &Play) -> (MonteCarloResult, Vec<f64>) {
     let mut round_outcomes_nozeros: Vec<f64> = vec![];
     let mut round_outcomes: Vec<f64> = vec![];
-    for _round in 1..iterations {
+    for _round in 0..iterations {
         let event_prob = play.event.prob.unwrap().sample(&mut rand::thread_rng());
         let mut rng = rand::thread_rng();
         let simulation_rand = Uniform::new_inclusive(0.0, 1.0);
         let mut simulation_total: f64 = 0.0;
-        for _each_event in 1..event_prob.round() as i64 {
+        for _each_event in 0..event_prob.round() as i64 {
             let condition_prob = get_condition_rand(&play.scenario);
-            if simulation_rand.sample(&mut rng) <= condition_prob {
+            let round_rand = simulation_rand.sample(&mut rng);
+            if round_rand <= condition_prob {
                 let magnitude_prob = play.magnitude_prob.unwrap().sample(&mut rand::thread_rng());
                 let cost_prob = get_cost_rand(&play.costs);
-                let simulation_outcome = magnitude_prob * cost_prob;
+                let simulation_outcome = cost_prob;
                 simulation_total += simulation_outcome;
             }
         }
@@ -135,7 +136,7 @@ fn get_condition_rand(entries: &[Entry]) -> f64 {
 }
 
 fn get_cost_rand(costs: &[Cost]) -> f64 {
-    let mut running_total: f64 = 1.0;
+    let mut running_total: f64 = 0.0;
     for cost in costs {
         running_total += cost.prob.unwrap().sample(&mut rand::thread_rng());
     }

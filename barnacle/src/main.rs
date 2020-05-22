@@ -12,27 +12,8 @@ use std::collections::HashMap;
 use std::process;
 
 fn main() {
-    let matches = App::new("Risk Barnacle")
-        .name("RISK BARNACLE")
-        .about("A Monte Carlo simulation tool for calculating monetary \
-                    losses based of different risk scenarios")
-        .version("v. 0.0.1")
-        .set_term_width(80)
-        .after_help("All dependent file locations and directories are located \
-                    in the Settings.toml file.")
-        .arg(Arg::with_name("output")
-             .short("o")
-             .long("output")
-             .value_name("FILENAME")
-             .help("Specify a custom output file name. Defaults to datetime.")
-             .takes_value(true))
-        .arg(Arg::with_name("iterations")
-             .short("i")
-             .long("iterations")
-             .value_name("ITERATIONS")
-             .help("Specify a custom iteration count for the Monte Carlo \
-                   simulation. Default is 100,000."))
-        .get_matches();
+    let cli_app = build_cli();
+    let matches = cli_app.get_matches();
 
     // Load config
     let mut settings = config::Config::default();
@@ -109,4 +90,27 @@ fn main() {
         &events,
         &costs,
     );
+}
+
+fn build_cli<'a, 'b>() -> clap::App<'a, 'b> {
+    App::new("Risk Barnacle")
+            .name("RISK BARNACLE")
+            .about("A Monte Carlo simulation tool for calculating monetary \
+                        losses based of different risk scenarios")
+            .version("v. 0.1.0")
+            .set_term_width(80)
+            .after_help("All dependent file locations and directories are located \
+                        in the Settings.toml file.")
+            .arg(Arg::with_name("output")
+                 .short("o")
+                 .long("output")
+                 .value_name("FILENAME")
+                 .help("Specify a custom output file name. Defaults to datetime.")
+                 .takes_value(true))
+            .arg(Arg::with_name("iterations")
+                 .short("i")
+                 .long("iterations")
+                 .value_name("ITERATIONS")
+                 .help("Specify a custom iteration count for the Monte Carlo \
+                       simulation. Default is 100,000."))   
 }
